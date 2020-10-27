@@ -9,7 +9,7 @@ mongoose
   .connect(process.env.MONGODB_URL || 'mongodb://127.0.0.1:27017/smp', {
     useCreateIndex: true,
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useUnifiedTopology: true
   })
   .then(() => {
     console.log('Successfully connected to MongoDB!');
@@ -22,7 +22,9 @@ mongoose
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(morgan('[:date[clf]] :method :url   :status  :response-time ms'));
+if (!process.env.NO_LOGS) {
+  app.use(morgan('[:date[clf]] :method :url   :status  :response-time ms'));
+}
 
 app.use('/api/v1/', v1);
 

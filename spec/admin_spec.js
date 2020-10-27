@@ -2,11 +2,12 @@ const mongoUnit = require('mongo-unit');
 const request = require('supertest');
 let app, adminToken, adminId;
 
-describe('Admin\n', () => {
+describe('Admin;', () => {
   beforeAll((done) => {
     mongoUnit.start().then((testMongoUrl) => {
       process.env.MONGODB_URL = testMongoUrl;
       process.env.PORT = 3002;
+      process.env.NO_LOGS = true;
       app = require('../index');
       done();
     });
@@ -18,7 +19,7 @@ describe('Admin\n', () => {
     done();
   });
 
-  describe('\tcan be created\n', () => {
+  describe('can be created;', () => {
     it('should reject if body is empty', (done) => {
       request(app)
         .post('/api/v1/admin')
@@ -70,7 +71,7 @@ describe('Admin\n', () => {
         .send({
           name: 'test',
           email: 'test@test.com',
-          phone: '0',
+          phone: '0'
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
@@ -87,7 +88,7 @@ describe('Admin\n', () => {
           name: 'test',
           email: 'test@test.com',
           phone: '0700010000',
-          password: 'pass',
+          password: 'pass'
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
@@ -104,7 +105,7 @@ describe('Admin\n', () => {
           name: 'test',
           email: 'test@test.com',
           phone: '07000100000',
-          password: 'passpasspa',
+          password: 'passpasspa'
         })
         .expect(201)
         .expect((response) => {
@@ -123,7 +124,7 @@ describe('Admin\n', () => {
           name: 'test',
           email: 'test1@test.com',
           phone: '07000110000',
-          password: 'passpasspa',
+          password: 'passpasspa'
         })
         .end((error) => {
           if (error) done.fail(error);
@@ -138,7 +139,7 @@ describe('Admin\n', () => {
           name: 'test',
           email: 'test@test.com',
           phone: '07000100000',
-          password: 'passpasspa',
+          password: 'passpasspa'
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
@@ -149,7 +150,7 @@ describe('Admin\n', () => {
     });
   });
 
-  describe('\tcan login\n', () => {
+  describe('can login;', () => {
     it('should reject if body is empty', (done) => {
       request(app)
         .post('/api/v1/admin/login')
@@ -212,7 +213,7 @@ describe('Admin\n', () => {
         .post('/api/v1/admin/login')
         .send({
           email: 'test@test.com',
-          password: 'pass',
+          password: 'pass'
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
@@ -227,7 +228,7 @@ describe('Admin\n', () => {
         .post('/api/v1/admin/login')
         .send({
           email: 'test@test.com',
-          password: 'passwrong',
+          password: 'passwrong'
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
@@ -242,7 +243,7 @@ describe('Admin\n', () => {
         .post('/api/v1/admin/login')
         .send({
           email: 'test@test.com',
-          password: 'passpasspa',
+          password: 'passpasspa'
         })
         .expect(201)
         .expect((response) => {
@@ -257,7 +258,7 @@ describe('Admin\n', () => {
     });
   });
 
-  describe('\tuses auth middleware\n', () => {
+  describe('uses auth middleware;', () => {
     it('should deny access, if authentication header token in absent or is not of this admin', (done) => {
       request(app)
         .get(`/api/v1/admin/${adminId}`)
@@ -281,7 +282,7 @@ describe('Admin\n', () => {
     });
   });
 
-  describe('\tobtains id from URL for CRUD operations\n', () => {
+  describe('obtains id from URL for CRUD operations;', () => {
     it('should reject if given an invalid id in URL parameters', (done) => {
       const someRandomId = 'someRandomId';
       request(app)
@@ -295,7 +296,7 @@ describe('Admin\n', () => {
     });
   });
 
-  describe('\tcan be viewed\n', () => {
+  describe('can be viewed;', () => {
     it('should return all its details if given the right id and the authentication header token is valid and has not expired', (done) => {
       request(app)
         .get(`/api/v1/admin/${adminId}`)
@@ -312,7 +313,7 @@ describe('Admin\n', () => {
     });
   });
 
-  describe('\tcan have its details updated\n', () => {
+  describe('can have its details updated;', () => {
     it('should reject updates if empty request body is sent', (done) => {
       request(app)
         .put(`/api/v1/admin/${adminId}`)
@@ -355,7 +356,7 @@ describe('Admin\n', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           email: 'test1@test.com',
-          phone: '07000110000',
+          phone: '07000110000'
         })
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
@@ -372,7 +373,7 @@ describe('Admin\n', () => {
         .send({
           name: 'retest',
           email: 'retest@test.com',
-          phone: '07003000000',
+          phone: '07003000000'
         })
         .expect(202)
         .expect((response) => {
@@ -387,7 +388,7 @@ describe('Admin\n', () => {
     });
   });
 
-  describe('\tcan have its password updated\n', () => {
+  describe('can have its password updated;', () => {
     it('should reject password change if request body is empty', (done) => {
       request(app)
         .put(`/api/v1/admin/password/${adminId}`)
@@ -478,7 +479,7 @@ describe('Admin\n', () => {
     });
   });
 
-  describe('\tcan be deleted\n', () => {
+  describe('can be deleted;', () => {
     it('', (done) => {
       request(app)
         .delete(`/api/v1/admin/${adminId}`)
