@@ -3,6 +3,7 @@ const app = express();
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const port = process.env.PORT || 3000;
+const v1 = require('./lib/v1/index');
 
 mongoose
   .connect(process.env.MONGODB_URL || 'mongodb://127.0.0.1:27017/smp', {
@@ -23,6 +24,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(morgan('[:date[clf]] :method :url   :status  :response-time ms'));
 
-app.use('/', (req, res) => res.send('OK'));
+app.use('/api/v1/', v1);
 
-module.exports = app.listen(port);
+app.use('**', (req, res) => res.status(404).end());
+
+module.exports = app.listen(port, () =>
+  console.log('Server listening on port ' + port)
+);
