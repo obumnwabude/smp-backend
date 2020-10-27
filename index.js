@@ -6,6 +6,7 @@ const port = process.env.PORT || 3000;
 
 mongoose
   .connect(process.env.MONGODB_URL || 'mongodb://127.0.0.1:27017/smp', {
+    useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
