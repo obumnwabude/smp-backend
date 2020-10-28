@@ -13,9 +13,9 @@ describe('Admin;', () => {
     });
   });
 
-  afterAll((done) => {
-    mongoUnit.drop();
-    app.close();
+  afterAll(async (done) => {
+    await mongoUnit.drop();
+    await app.close();
     done();
   });
 
@@ -25,20 +25,14 @@ describe('Admin;', () => {
         .post('/api/v1/admin')
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
 
       request(app)
         .post('/api/v1/admin')
         .send({})
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should reject if invalid name is provided', (done) => {
@@ -47,10 +41,7 @@ describe('Admin;', () => {
         .send({ name: 'o' })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should reject if invalid email is provided', (done) => {
@@ -59,10 +50,7 @@ describe('Admin;', () => {
         .send({ name: 'test', email: 'o' })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should reject if invalid phone is provided', (done) => {
@@ -75,10 +63,7 @@ describe('Admin;', () => {
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should reject if insufficient password is provided', (done) => {
@@ -87,15 +72,12 @@ describe('Admin;', () => {
         .send({
           name: 'test',
           email: 'test@test.com',
-          phone: '0700010000',
+          phone: '07000100000',
           password: 'pass'
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should successfully create a new admin if all parameters are properly provided', (done) => {
@@ -112,24 +94,7 @@ describe('Admin;', () => {
           expect(response.body.success).toBeTrue();
           adminId = response.body._id;
         })
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
-
-      //for use later in update
-      request(app)
-        .post('/api/v1/admin')
-        .send({
-          name: 'test',
-          email: 'test1@test.com',
-          phone: '07000110000',
-          password: 'passpasspa'
-        })
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should not permit creation of an admin with existing email or phone', (done) => {
@@ -143,10 +108,7 @@ describe('Admin;', () => {
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
   });
 
@@ -156,20 +118,14 @@ describe('Admin;', () => {
         .post('/api/v1/admin/login')
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
 
       request(app)
         .post('/api/v1/admin/login')
         .send({})
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should reject if invalid email is sent for login', (done) => {
@@ -178,22 +134,7 @@ describe('Admin;', () => {
         .send({ email: 'test' })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
-    });
-
-    it('should reject if inexistent email is sent for login', (done) => {
-      request(app)
-        .post('/api/v1/admin/login')
-        .send({ email: 'test1@test1.com' })
-        .expect(401)
-        .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should reject if no password is provided', (done) => {
@@ -202,10 +143,7 @@ describe('Admin;', () => {
         .send({ email: 'test@test.com' })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should reject if insufficient password is provided', (done) => {
@@ -217,10 +155,7 @@ describe('Admin;', () => {
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should reject if wrong password is provided', (done) => {
@@ -232,10 +167,16 @@ describe('Admin;', () => {
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
+    });
+
+    it('should reject if inexistent email is sent for login', (done) => {
+      request(app)
+        .post('/api/v1/admin/login')
+        .send({ email: 'test0@tes1.com', password: 'passwrong' })
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
     });
 
     it('should login and return token if correct email and password is provided', (done) => {
@@ -251,53 +192,49 @@ describe('Admin;', () => {
           expect(response.body.token).toBeDefined();
           adminToken = response.body.token;
         })
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
   });
 
   describe('uses auth middleware;', () => {
-    it('should deny access, if authentication header token in absent or is not of this admin', (done) => {
+    it('should deny access, if authorization header token in absent', (done) => {
       request(app)
         .get(`/api/v1/admin/${adminId}`)
         .expect(403)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
+    });
 
-      const someRandomToken = 'someRandomToken';
+    it('should deny access, if authorization header token in invalid', (done) => {
       request(app)
         .get(`/api/v1/admin/${adminId}`)
-        .set('Authorization', `Bearer ${someRandomToken}`)
+        .set('Authorization', `Bearer someRandomToken`)
         .expect(403)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
   });
 
   describe('obtains id from URL for CRUD operations;', () => {
-    it('should reject if given an invalid id in URL parameters', (done) => {
-      const someRandomId = 'someRandomId';
+    it('should reject if given an inexistent id in URL parameters', (done) => {
       request(app)
-        .get(`/api/v1/admin/${someRandomId}`)
+        .get(`/api/v1/admin/someRandomId`)
         .expect(400)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
+    });
+
+    it('should reject if given an invalid id in URL parameters', (done) => {
+      request(app)
+        .get(`/api/v1/admin/0000000`)
+        .expect(400)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
     });
   });
 
   describe('can be viewed;', () => {
-    it('should return all its details if given the right id and the authentication header token is valid and has not expired', (done) => {
+    it('should return all its details if given the right id and the authorization header token is valid and has not expired', (done) => {
       request(app)
         .get(`/api/v1/admin/${adminId}`)
         .set('Authorization', `Bearer ${adminToken}`)
@@ -306,10 +243,7 @@ describe('Admin;', () => {
           expect(response.body.success).toBeTrue();
           expect(response.body.email).toBeDefined();
         })
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
   });
 
@@ -320,10 +254,7 @@ describe('Admin;', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should reject updates if neither of name, email and phone are sent', (done) => {
@@ -333,10 +264,7 @@ describe('Admin;', () => {
         .send({})
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
 
       request(app)
         .put(`/api/v1/admin/${adminId}`)
@@ -344,25 +272,29 @@ describe('Admin;', () => {
         .send({ irrelevant: 'really irrelevant' })
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should reject update of an admin with existing email or phone', (done) => {
       request(app)
-        .put(`/api/v1/admin/${adminId}`)
-        .set('Authorization', `Bearer ${adminToken}`)
+        .post('/api/v1/admin')
         .send({
+          name: 'test',
           email: 'test1@test.com',
-          phone: '07000110000'
+          phone: '07000110000',
+          password: 'passpasspa'
         })
-        .expect(422)
-        .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
+        .then(() => {
+          request(app)
+            .put(`/api/v1/admin/${adminId}`)
+            .set('Authorization', `Bearer ${adminToken}`)
+            .send({
+              email: 'test1@test.com',
+              phone: '07000110000'
+            })
+            .expect(422)
+            .expect((response) => expect(response.body.success).toBeFalse())
+            .then(done);
         });
     });
 
@@ -381,59 +313,28 @@ describe('Admin;', () => {
           // update adminToken as the email has changed
           adminToken = response.body.token;
         })
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
   });
 
   describe('can have its password updated;', () => {
-    it('should reject password change if request body is empty', (done) => {
+    it('should reject password change if both old and new passwords are not in request body', (done) => {
       request(app)
         .put(`/api/v1/admin/password/${adminId}`)
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
-    it('should reject password change if both old and new passwords are not present', (done) => {
+    it('should reject password change if old password is wrong', (done) => {
       request(app)
         .put(`/api/v1/admin/password/${adminId}`)
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({ password: 'passpasspass' })
-        .expect(422)
+        .send({ old_password: 'passwrong', new_password: 'newerpass' })
+        .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
-
-      request(app)
-        .put(`/api/v1/admin/password/${adminId}`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ old_password: 'passpasspass' })
-        .expect(422)
-        .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
-
-      request(app)
-        .put(`/api/v1/admin/password/${adminId}`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ new_password: 'passpasspass' })
-        .expect(422)
-        .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
 
     it('should be capable of changing password, generate new token and invalidate old tokens', (done) => {
@@ -449,33 +350,14 @@ describe('Admin;', () => {
           oldToken = adminToken;
           adminToken = response.body.token;
         })
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
-
-      request(app)
-        .get(`/api/v1/admin/${adminId}`)
-        .set('Authorization', `Bearer ${oldToken}`)
-        .expect(403)
-        .expect((response) => expect(response.body.success).toBeFalse())
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
-
-      request(app)
-        .get(`/api/v1/admin/${adminId}`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .expect(200)
-        .expect((response) => {
-          expect(response.body.success).toBeTrue();
-          expect(response.body.email).toBeDefined();
-        })
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(() =>
+          request(app)
+            .get(`/api/v1/admin/${adminId}`)
+            .set('Authorization', `Bearer ${oldToken}`)
+            .expect(403)
+            .expect((response) => expect(response.body.success).toBeFalse())
+            .then(done)
+        );
     });
   });
 
@@ -485,10 +367,7 @@ describe('Admin;', () => {
         .delete(`/api/v1/admin/${adminId}`)
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(204)
-        .end((error) => {
-          if (error) done.fail(error);
-          else done();
-        });
+        .then(done);
     });
   });
 });

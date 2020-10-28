@@ -6,6 +6,7 @@
   "scripts": {
     "pretest": "eslint --fix .",
     "test": "jasmine",
+    "cover": "nyc report --reporter=lcov --reporter=text",
     "start": "node index.js",
     "dev": "(start nodemon index.js && start nodemon --exec 'npm test') || (nodemon index.js & nodemon --exec 'npm test')"
   },
@@ -39,6 +40,7 @@
     "jasmine-spec-reporter": "^6.0.0",
     "mongo-unit": "^2.0.1",
     "nodemon": "^2.0.6",
+    "nyc": "^15.1.0",
     "prettier": "2.1.2",
     "supertest": "^5.0.0"
   }

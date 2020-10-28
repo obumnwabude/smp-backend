@@ -19,5 +19,8 @@
   "rules": {
     "prettier/prettier": "error"
   },
-  "extends": ["eslint:recommended", "plugin:prettier/recommended"]
+  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+  "rules": {
+    "no-console": ["warn"]
+  }
 }
