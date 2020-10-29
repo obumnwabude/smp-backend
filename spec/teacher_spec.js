@@ -1,5 +1,6 @@
 const mongoUnit = require('mongo-unit');
 const request = require('supertest');
+const defaultPassword = 'passpasspa';
 let app, adminToken, adminId, oldToken, teacherToken, teacherId;
 
 describe('Teacher', () => {
@@ -127,6 +128,23 @@ describe('Teacher', () => {
         .catch(done.fail);
     });
 
+    it('should not create if request body does not have at least 8 characters password', (done) => {
+      request(app)
+        .post('/api/v1/teacher')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          adminId: adminId,
+          name: 'teacher1',
+          email: 'teach@teach.com',
+          phone: '07000000000',
+          password: 'pass'
+        })
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done)
+        .catch(done.fail);
+    });
+
     it('should create teacher and return password', (done) => {
       request(app)
         .post('/api/v1/teacher')
@@ -135,12 +153,13 @@ describe('Teacher', () => {
           adminId: adminId,
           name: 'teacher1',
           email: 'teach@teach.com',
-          phone: '07000000000'
+          phone: '07000000000',
+          password: defaultPassword
         })
         .expect(201)
         .expect((response) => {
           expect(response.body.success).toBeTrue();
-          expect(response.body.password).toBeDefined();
+          expect(response.body.password).toEqual(defaultPassword);
 
           teacherId = response.body._id;
         })
@@ -156,9 +175,10 @@ describe('Teacher', () => {
           adminId: adminId,
           name: 'teacher1',
           email: 'teach@teach.com',
-          phone: '07000000000'
+          phone: '07000000000',
+          password: defaultPassword
         })
-        .expect(422)
+        .expect(401)
         .expect((response) => {
           expect(response.body.success).toBeFalse();
           expect(response.body.message).toMatch(/email/);
@@ -240,7 +260,7 @@ describe('Teacher', () => {
         .post('/api/v1/teacher/login')
         .send({
           email: 'teach@teach.com',
-          password: '00000000'
+          password: defaultPassword
         })
         .expect(201)
         .expect((response) => {
