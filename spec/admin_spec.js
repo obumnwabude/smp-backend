@@ -337,6 +337,16 @@ describe('Admin;', () => {
         .then(done);
     });
 
+    it('should reject password change if new password is short', (done) => {
+      request(app)
+        .put(`/api/v1/admin/password/${adminId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ old_password: 'passpasspa', new_password: 'newer' })
+        .expect(422)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
+    });
+
     it('should be capable of changing password, generate new token and invalidate old tokens', (done) => {
       let oldToken;
       request(app)
