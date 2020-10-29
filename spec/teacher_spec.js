@@ -79,7 +79,7 @@ describe('Teacher', () => {
     it('should not create if adminToken is invalid and there is valid adminId', (done) => {
       request(app)
         .post('/api/v1/teacher')
-        .set('Authorization', `Bearer invalidToken`)
+        .set('Authorization', 'Bearer invalidToken')
         .send({ adminId: adminId, name: 'o' })
         .expect(403)
         .then(done);
@@ -134,6 +134,25 @@ describe('Teacher', () => {
         .expect((response) => {
           expect(response.body.success).toBeTrue();
           expect(response.body.password).toBeDefined();
+        })
+        .then(done);
+    });
+
+    it('should reject teacher creation if existing email or phone is used', (done) => {
+      request(app)
+        .post('/api/v1/teacher')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          adminId: adminId,
+          name: 'teacher1',
+          email: 'teach.obu-oasdf@teach.com',
+          phone: '07000000000'
+        })
+        .expect(422)
+        .expect((response) => {
+          expect(response.body.success).toBeFalse();
+          expect(response.body.message).toMatch(/email/);
+          expect(response.body.message).toMatch(/phone/);
         })
         .then(done);
     });

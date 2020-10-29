@@ -208,7 +208,7 @@ describe('Admin;', () => {
     it('should deny access, if authorization header token in invalid', (done) => {
       request(app)
         .get(`/api/v1/admin/${adminId}`)
-        .set('Authorization', `Bearer someRandomToken`)
+        .set('Authorization', 'Bearer someRandomToken')
         .expect(403)
         .expect((response) => expect(response.body.success).toBeFalse())
         .then(done);
@@ -218,7 +218,7 @@ describe('Admin;', () => {
   describe('obtains id from URL for CRUD operations;', () => {
     it('should reject if given an inexistent id in URL parameters', (done) => {
       request(app)
-        .get(`/api/v1/admin/someRandomId`)
+        .get('/api/v1/admin/someRandomId')
         .expect(400)
         .expect((response) => expect(response.body.success).toBeFalse())
         .then(done);
@@ -226,7 +226,7 @@ describe('Admin;', () => {
 
     it('should reject if given an invalid id in URL parameters', (done) => {
       request(app)
-        .get(`/api/v1/admin/0000000`)
+        .get('/api/v1/admin/0000000')
         .expect(400)
         .expect((response) => expect(response.body.success).toBeFalse())
         .then(done);
