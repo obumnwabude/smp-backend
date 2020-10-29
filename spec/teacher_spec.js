@@ -2,7 +2,7 @@ const mongoUnit = require('mongo-unit');
 const request = require('supertest');
 let app, adminToken, adminId;
 
-describe('Teacher \n', () => {
+describe('Teacher', () => {
   beforeAll((done) => {
     mongoUnit.start().then((testMongoUrl) => {
       process.env.MONGODB_URL = testMongoUrl;
@@ -43,7 +43,7 @@ describe('Teacher \n', () => {
     done();
   });
 
-  describe('\tcan be created \n', () => {
+  describe('can be created', () => {
     it('should not create if adminId in the request body absent', (done) => {
       request(app)
         .post('/api/v1/teacher')
@@ -85,12 +85,54 @@ describe('Teacher \n', () => {
         .then(done);
     });
 
-    it('should return request body', (done) => {
+    it('should not create if request body does not contain valid name', (done) => {
       request(app)
         .post('/api/v1/teacher')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ adminId: adminId, name: 'o' })
-        .expect((response) => expect(response.body.name).toBe('o'))
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
+    });
+
+    it('should not create if request body does not contain valid email', (done) => {
+      request(app)
+        .post('/api/v1/teacher')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ adminId: adminId, name: 'teacher1', email: 'teach' })
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
+    });
+
+    it('should not create if request body does not contain valid phone', (done) => {
+      request(app)
+        .post('/api/v1/teacher')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          adminId: adminId,
+          name: 'teacher1',
+          email: 'teach@teach.com',
+          phone: '0700'
+        })
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
+    });
+
+    it('should return request body', (done) => {
+      request(app)
+        .post('/api/v1/teacher')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          adminId: adminId,
+          name: 'teacher1',
+          email: 'teach@teach.com',
+          phone: '07000000000'
+        })
+        .expect((response) =>
+          expect(response.body.email).toBe('teach@teach.com')
+        )
         .then(done);
     });
   });
