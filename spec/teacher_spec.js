@@ -509,4 +509,72 @@ describe('Teacher', () => {
         .catch(done.fail);
     });
   });
+
+  describe('can have its password updated;', () => {
+    it('should reject password change if both old and new passwords are not in request body', (done) => {
+      request(app)
+        .put(`/api/v1/teacher/password/${teacherId}`)
+        .set('Authorization', `Bearer ${teacherToken}`)
+        .expect(422)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done)
+        .catch(done.fail);
+    });
+
+    it('should reject password change if old password is wrong', (done) => {
+      request(app)
+        .put(`/api/v1/teacher/password/${teacherId}`)
+        .set('Authorization', `Bearer ${teacherToken}`)
+        .send({ old_password: 'passwrong', new_password: 'newerpass' })
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done)
+        .catch(done.fail);
+    });
+
+    it('should reject password change if new password is short', (done) => {
+      request(app)
+        .put(`/api/v1/teacher/password/${teacherId}`)
+        .set('Authorization', `Bearer ${teacherToken}`)
+        .send({ old_password: 'newerpass', new_password: 'newer' })
+        .expect(422)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done)
+        .catch(done.fail);
+    });
+
+    it('should be capable of changing password, generate new token and invalidate old tokens', (done) => {
+      let oldToken;
+      request(app)
+        .put(`/api/v1/teacher/password/${teacherId}`)
+        .set('Authorization', `Bearer ${teacherToken}`)
+        .send({ old_password: 'newerpass', new_password: 'newernew' })
+        .expect(202)
+        .expect((response) => {
+          expect(response.body.success).toBeTrue();
+          expect(response.body.token).toBeDefined();
+          oldToken = teacherToken;
+          teacherToken = response.body.token;
+        })
+        .then(() =>
+          request(app)
+            .get(`/api/v1/teacher/${teacherId}`)
+            .set('Authorization', `Bearer ${oldToken}`)
+            .expect(403)
+            .expect((response) => expect(response.body.success).toBeFalse())
+            .then(done)
+        );
+    });
+  });
+
+  describe('can be deleted;', () => {
+    it('', (done) => {
+      request(app)
+        .delete(`/api/v1/teacher/${teacherId}`)
+        .set('Authorization', `Bearer ${teacherToken}`)
+        .expect(204)
+        .then(done)
+        .catch(done.fail);
+    });
+  });
 });
