@@ -26,13 +26,6 @@ describe('Admin;', () => {
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
         .then(done);
-
-      request(app)
-        .post('/api/v1/admin')
-        .send({})
-        .expect(401)
-        .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
     });
 
     it('should reject if invalid name is provided', (done) => {
@@ -116,13 +109,6 @@ describe('Admin;', () => {
     it('should reject if body is empty', (done) => {
       request(app)
         .post('/api/v1/admin/login')
-        .expect(401)
-        .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
-
-      request(app)
-        .post('/api/v1/admin/login')
-        .send({})
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
         .then(done);

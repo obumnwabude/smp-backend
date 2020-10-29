@@ -1,6 +1,6 @@
 const mongoUnit = require('mongo-unit');
 const request = require('supertest');
-let app, adminToken, adminId;
+let app, adminToken, adminId, teacherToken, teacherId;
 
 describe('Teacher', () => {
   beforeAll((done) => {
@@ -127,13 +127,16 @@ describe('Teacher', () => {
         .send({
           adminId: adminId,
           name: 'teacher1',
-          email: 'teach.obu-oasdf@teach.com',
+          email: 'teach@teach.com',
           phone: '07000000000'
         })
         .expect(201)
         .expect((response) => {
           expect(response.body.success).toBeTrue();
           expect(response.body.password).toBeDefined();
+
+          teacherId = response.body._id;
+          console.log(teacherId);
         })
         .then(done);
     });
@@ -145,7 +148,7 @@ describe('Teacher', () => {
         .send({
           adminId: adminId,
           name: 'teacher1',
-          email: 'teach.obu-oasdf@teach.com',
+          email: 'teach@teach.com',
           phone: '07000000000'
         })
         .expect(422)
@@ -153,6 +156,85 @@ describe('Teacher', () => {
           expect(response.body.success).toBeFalse();
           expect(response.body.message).toMatch(/email/);
           expect(response.body.message).toMatch(/phone/);
+        })
+        .then(done);
+    });
+  });
+
+  describe('can login;', () => {
+    it('should reject if body is empty', (done) => {
+      request(app)
+        .post('/api/v1/teacher/login')
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
+    });
+
+    it('should reject if invalid email is sent for login', (done) => {
+      request(app)
+        .post('/api/v1/teacher/login')
+        .send({ email: 'teach' })
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
+    });
+
+    it('should reject if no password is provided', (done) => {
+      request(app)
+        .post('/api/v1/teacher/login')
+        .send({ email: 'teach@teach.com' })
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
+    });
+
+    it('should reject if insufficient password is provided', (done) => {
+      request(app)
+        .post('/api/v1/teacher/login')
+        .send({
+          email: 'teach@teach.com',
+          password: 'pass'
+        })
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
+    });
+
+    it('should reject if wrong password is provided', (done) => {
+      request(app)
+        .post('/api/v1/teacher/login')
+        .send({
+          email: 'teach@teach.com',
+          password: 'passwrong'
+        })
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
+    });
+
+    it('should reject if inexistent email is sent for login', (done) => {
+      request(app)
+        .post('/api/v1/teacher/login')
+        .send({ email: 'test0@teach.com', password: 'passwrong' })
+        .expect(401)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done);
+    });
+
+    it('should login and return token if correct email and password is provided', (done) => {
+      request(app)
+        .post('/api/v1/teacher/login')
+        .send({
+          email: 'teach@teach.com',
+          password: '00000000'
+        })
+        .expect(201)
+        .expect((response) => {
+          expect(response.body.success).toBeTrue();
+          expect(response.body.token).toBeDefined();
+
+          teacherToken = response.body.token;
+          console.log(teacherToken);
         })
         .then(done);
     });
