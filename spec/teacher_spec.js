@@ -385,9 +385,7 @@ describe('Teacher', () => {
         .set('Authorization', `Bearer ${teacherToken}`)
         .send({ password: 'newernewer' })
         .expect(401)
-        .expect((response) => {
-          expect(response.body.success).toBeFalse();
-        })
+        .expect((response) => expect(response.body.success).toBeFalse())
         .then(done)
         .catch(done.fail);
     });
@@ -400,6 +398,112 @@ describe('Teacher', () => {
         .expect((response) => {
           expect(response.body.success).toBeTrue();
           expect(response.body.hasDefaultPassword).toBeFalse();
+        })
+        .then(done)
+        .catch(done.fail);
+    });
+  });
+
+  describe('can have its details updated;', () => {
+    it('should reject updates if empty request body is sent', (done) => {
+      request(app)
+        .put(`/api/v1/teacher/${teacherId}`)
+        .set('Authorization', `Bearer ${teacherToken}`)
+        .expect(422)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done)
+        .catch(done.fail);
+    });
+
+    it('should reject updates if neither of name, email and phone are sent', (done) => {
+      request(app)
+        .put(`/api/v1/teacher/${teacherId}`)
+        .set('Authorization', `Bearer ${teacherToken}`)
+        .send({ irrelevant: 'really irrelevant' })
+        .expect(422)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done)
+        .catch(done.fail);
+    });
+
+    it('should reject update with invalid name', (done) => {
+      request(app)
+        .put(`/api/v1/teacher/${teacherId}`)
+        .set('Authorization', `Bearer ${teacherToken}`)
+        .send({ name: 'o' })
+        .expect(422)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done)
+        .catch(done.fail);
+    });
+
+    it('should reject update with invalid email', (done) => {
+      request(app)
+        .put(`/api/v1/teacher/${teacherId}`)
+        .set('Authorization', `Bearer ${teacherToken}`)
+        .send({ email: 'oooo' })
+        .expect(422)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done)
+        .catch(done.fail);
+    });
+
+    it('should reject update with invalid phone', (done) => {
+      request(app)
+        .put(`/api/v1/teacher/${teacherId}`)
+        .set('Authorization', `Bearer ${teacherToken}`)
+        .send({ phone: '0000' })
+        .expect(422)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done)
+        .catch(done.fail);
+    });
+
+    it('should reject update of with existing email or phone', (done) => {
+      request(app)
+        .post('/api/v1/teacher')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          adminId,
+          name: 'test',
+          email: 'test1@test.com',
+          phone: '07000110000',
+          password: 'passpasspa'
+        })
+        .then(() => {
+          request(app)
+            .post('/api/v1/teacher/login')
+            .send({ email: 'test1@test.com', password: 'passpasspa' })
+            .then((res) => {
+              request(app)
+                .put(`/api/v1/teacher/${res.body._id}`)
+                .set('Authorization', `Bearer ${res.body.token}`)
+                .send({
+                  email: 'teach@teach.com',
+                  phone: '07000000000'
+                })
+                .expect(422)
+                .expect((response) => expect(response.body.success).toBeFalse())
+                .then(done)
+                .catch(done.fail);
+            });
+        });
+    });
+
+    it('should update its details when given apprioprate data, the right id and the right token', (done) => {
+      request(app)
+        .put(`/api/v1/teacher/${teacherId}`)
+        .set('Authorization', `Bearer ${teacherToken}`)
+        .send({
+          name: 'retest',
+          email: 'retest@test.com',
+          phone: '07003000000'
+        })
+        .expect(202)
+        .expect((response) => {
+          expect(response.body.success).toBeTrue();
+          // update adminToken as the email has changed
+          teacherToken = response.body.token;
         })
         .then(done)
         .catch(done.fail);

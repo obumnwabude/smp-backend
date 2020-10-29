@@ -267,16 +267,40 @@ describe('Admin;', () => {
       request(app)
         .put(`/api/v1/admin/${adminId}`)
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({})
+        .send({ irrelevant: 'really irrelevant' })
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
         .then(done)
         .catch(done.fail);
+    });
 
+    it('should reject update with invalid name', (done) => {
       request(app)
         .put(`/api/v1/admin/${adminId}`)
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({ irrelevant: 'really irrelevant' })
+        .send({ name: 'o' })
+        .expect(422)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done)
+        .catch(done.fail);
+    });
+
+    it('should reject update with invalid email', (done) => {
+      request(app)
+        .put(`/api/v1/admin/${adminId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ email: 'oooo' })
+        .expect(422)
+        .expect((response) => expect(response.body.success).toBeFalse())
+        .then(done)
+        .catch(done.fail);
+    });
+
+    it('should reject update with invalid phone', (done) => {
+      request(app)
+        .put(`/api/v1/admin/${adminId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ phone: '0000' })
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
         .then(done)
