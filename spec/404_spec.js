@@ -20,6 +20,6 @@ describe('Server', () => {
   });
 
   it('should have /404', (done) => {
-    request(app).get('/404').expect(404).then(done);
+    request(app).get('/404').expect(404).then(done).catch(done.fail);
   });
 });

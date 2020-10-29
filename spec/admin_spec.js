@@ -25,7 +25,8 @@ describe('Admin;', () => {
         .post('/api/v1/admin')
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject if invalid name is provided', (done) => {
@@ -34,7 +35,8 @@ describe('Admin;', () => {
         .send({ name: 'o' })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject if invalid email is provided', (done) => {
@@ -43,7 +45,8 @@ describe('Admin;', () => {
         .send({ name: 'test', email: 'o' })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject if invalid phone is provided', (done) => {
@@ -56,7 +59,8 @@ describe('Admin;', () => {
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject if insufficient password is provided', (done) => {
@@ -70,7 +74,8 @@ describe('Admin;', () => {
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should successfully create a new admin if all parameters are properly provided', (done) => {
@@ -87,7 +92,8 @@ describe('Admin;', () => {
           expect(response.body.success).toBeTrue();
           adminId = response.body._id;
         })
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should not permit creation of an admin with existing email or phone', (done) => {
@@ -101,7 +107,8 @@ describe('Admin;', () => {
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
   });
 
@@ -111,7 +118,8 @@ describe('Admin;', () => {
         .post('/api/v1/admin/login')
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject if invalid email is sent for login', (done) => {
@@ -120,7 +128,8 @@ describe('Admin;', () => {
         .send({ email: 'test' })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject if no password is provided', (done) => {
@@ -129,7 +138,8 @@ describe('Admin;', () => {
         .send({ email: 'test@test.com' })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject if insufficient password is provided', (done) => {
@@ -141,7 +151,8 @@ describe('Admin;', () => {
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject if wrong password is provided', (done) => {
@@ -153,7 +164,8 @@ describe('Admin;', () => {
         })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject if inexistent email is sent for login', (done) => {
@@ -162,7 +174,8 @@ describe('Admin;', () => {
         .send({ email: 'test0@tes1.com', password: 'passwrong' })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should login and return token if correct email and password is provided', (done) => {
@@ -178,7 +191,8 @@ describe('Admin;', () => {
           expect(response.body.token).toBeDefined();
           adminToken = response.body.token;
         })
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
   });
 
@@ -188,7 +202,8 @@ describe('Admin;', () => {
         .get(`/api/v1/admin/${adminId}`)
         .expect(403)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should deny access, if authorization header token in invalid', (done) => {
@@ -197,7 +212,8 @@ describe('Admin;', () => {
         .set('Authorization', 'Bearer someRandomToken')
         .expect(403)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
   });
 
@@ -207,7 +223,8 @@ describe('Admin;', () => {
         .get('/api/v1/admin/someRandomId')
         .expect(400)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject if given an invalid id in URL parameters', (done) => {
@@ -215,7 +232,8 @@ describe('Admin;', () => {
         .get('/api/v1/admin/0000000')
         .expect(400)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
   });
 
@@ -229,7 +247,8 @@ describe('Admin;', () => {
           expect(response.body.success).toBeTrue();
           expect(response.body.email).toBeDefined();
         })
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
   });
 
@@ -240,7 +259,8 @@ describe('Admin;', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject updates if neither of name, email and phone are sent', (done) => {
@@ -250,7 +270,8 @@ describe('Admin;', () => {
         .send({})
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
 
       request(app)
         .put(`/api/v1/admin/${adminId}`)
@@ -258,7 +279,8 @@ describe('Admin;', () => {
         .send({ irrelevant: 'really irrelevant' })
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject update of an admin with existing email or phone', (done) => {
@@ -280,7 +302,8 @@ describe('Admin;', () => {
             })
             .expect(422)
             .expect((response) => expect(response.body.success).toBeFalse())
-            .then(done);
+            .then(done)
+            .catch(done.fail);
         });
     });
 
@@ -299,7 +322,8 @@ describe('Admin;', () => {
           // update adminToken as the email has changed
           adminToken = response.body.token;
         })
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
   });
 
@@ -310,7 +334,8 @@ describe('Admin;', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject password change if old password is wrong', (done) => {
@@ -320,7 +345,8 @@ describe('Admin;', () => {
         .send({ old_password: 'passwrong', new_password: 'newerpass' })
         .expect(401)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should reject password change if new password is short', (done) => {
@@ -330,7 +356,8 @@ describe('Admin;', () => {
         .send({ old_password: 'passpasspa', new_password: 'newer' })
         .expect(422)
         .expect((response) => expect(response.body.success).toBeFalse())
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
 
     it('should be capable of changing password, generate new token and invalidate old tokens', (done) => {
@@ -363,7 +390,8 @@ describe('Admin;', () => {
         .delete(`/api/v1/admin/${adminId}`)
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(204)
-        .then(done);
+        .then(done)
+        .catch(done.fail);
     });
   });
 });
