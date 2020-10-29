@@ -120,19 +120,21 @@ describe('Teacher', () => {
         .then(done);
     });
 
-    it('should return request body', (done) => {
+    it('should create teacher and return password', (done) => {
       request(app)
         .post('/api/v1/teacher')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           adminId: adminId,
           name: 'teacher1',
-          email: 'teach@teach.com',
+          email: 'teach.obu-oasdf@teach.com',
           phone: '07000000000'
         })
-        .expect((response) =>
-          expect(response.body.email).toBe('teach@teach.com')
-        )
+        .expect(201)
+        .expect((response) => {
+          expect(response.body.success).toBeTrue();
+          expect(response.body.password).toBeDefined();
+        })
         .then(done);
     });
   });
